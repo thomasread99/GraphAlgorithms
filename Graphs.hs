@@ -38,7 +38,7 @@ import Numeric
 
 type AdjList = [[Int]]
 
-{- In and adjacencly matrix am, the element with
+{- In and adjacency matrix am, the element with
    coordinates i,j, that is am!!i!!j
    is True if there is an edge from i to j
       False if there is no edge from i to j
@@ -47,15 +47,17 @@ type AdjList = [[Int]]
 type AdjMatrix = [[Bool]]
 
 -- Suppose we're given a graph as a list of edges (i,j)
--- Generate the Adjacency List and Adjacencty Matrix representations
+-- Generate the Adjacency List and Adjacency Matrix representations
 
 -- GENERATION OF ADJACENCY LIST
 
 adjList :: [(Int,Int)] -> AdjList
+adjList ps = [[i] | (i,j) <- ps]
+
 
 -- GENERATION OF ADJACENCY MATRIX
 
-adjMatrix :: [(Int,Int)] -> AdjMatrix
+--adjMatrix :: [(Int,Int)] -> AdjMatrix
 
 --------------------------------------------------------
 
@@ -85,12 +87,12 @@ type Edges = [(Int,Int,Float)]
 -- GENERATION OF ADJACENCY LIST
 --   from a list of edges
 
-adjListW :: Edges -> WAdjList
+--adjListW :: Edges -> WAdjList
 
 -- GENERATION OF ADJACENCY MATRIX
 --   from a list of edges
 
-adjMatrixW :: Edges -> WAdjMatrix
+--adjMatrixW :: Edges -> WAdjMatrix
 
 -- DIJKSTRA'S ALGORITHM
 
@@ -100,7 +102,7 @@ adjMatrixW :: Edges -> WAdjMatrix
    (dijkstra al s)!!j is the minimum distance from s to j
 -}
 
-dijkstra :: WAdjList -> Int -> [Maybe Float]
+--dijkstra :: WAdjList -> Int -> [Maybe Float]
 
 -- FLOYD-WARSHALL ALGORITHM
 
@@ -111,4 +113,4 @@ dijkstra :: WAdjList -> Int -> [Maybe Float]
      (Just x) if the shortest path from i to j has length x
 -}
 
-floydWarshall :: WAdjMatrix -> WAdjMatrix
+--floydWarshall :: WAdjMatrix -> WAdjMatrix
