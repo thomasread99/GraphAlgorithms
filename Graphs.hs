@@ -52,10 +52,9 @@ type AdjMatrix = [[Bool]]
 -- GENERATION OF ADJACENCY LIST
 
 adjList :: [(Int,Int)] -> AdjList
-adjList ps = [[i] | (i,j) <- ps]
-
-
--- GENERATION OF ADJACENCY MATRIX
+--adjList ps = [[i] | (i,j) <- ps]
+--adjList [(i1,j1):xs] = [[j1,j2] | j2 <- xs, i = i1], adjList(xs)]
+adjList [(i, j) : (i2, j2) : xs] = [[j, j2]] : [adjList(xs)]-- GENERATION OF ADJACENCY MATRIX
 
 --adjMatrix :: [(Int,Int)] -> AdjMatrix
 
