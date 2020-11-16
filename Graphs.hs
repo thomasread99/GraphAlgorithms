@@ -56,14 +56,6 @@ adjList ((i, j) : []) = []
 adjList ((i, j) : (i2, j2) : xs) = if i2 == i then [[j] ++ [j2] ++ [x | (y,x) <- xs, y == i]]--[[j,j2] ++ [x] | (y,x) <- xs, y == i] --adjList ((i2, j2) : xs) --merge [j] [j2] : adjList xs                                                                         
                                               else adjList ((i2,j2) : xs)
 
-getI :: [(Int,Int)] -> Int
-getI [] = 0
-getI ((i, j) : xs) = i
-
-merge :: [Int] -> [Int] -> [Int]
-merge xs [] = xs
-merge [] ys = ys
-merge (x:xs) (y:ys) = x : y : merge xs ys
 
 {-adjList ((i, j) : (i2, j2) : xs) = if i2 == i then (if getI xs == i2 then [j, j2, getI xs] : adjList xs
                                                                      else [j, j2] : adjList xs)
