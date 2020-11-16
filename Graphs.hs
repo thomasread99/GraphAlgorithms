@@ -53,8 +53,8 @@ type AdjMatrix = [[Bool]]
 adjList :: [(Int,Int)] -> AdjList
 adjList [] = []
 adjList ((i, j) : []) = []
-adjList ((i, j) : (i2, j2) : xs) = if i2 == i then [[j,j2,x] | (y,x) <- xs, y == i] --adjList ((i2, j2) : xs) --merge [j] [j2] : adjList xs                                                                         
-                                              else [[j]]-- : adjList ((i2,j2) : xs)
+adjList ((i, j) : (i2, j2) : xs) = if i2 == i then [[j] ++ [j2] ++ [x | (y,x) <- xs, y == i]]--[[j,j2] ++ [x] | (y,x) <- xs, y == i] --adjList ((i2, j2) : xs) --merge [j] [j2] : adjList xs                                                                         
+                                              else adjList ((i2,j2) : xs)
 
 getI :: [(Int,Int)] -> Int
 getI [] = 0
