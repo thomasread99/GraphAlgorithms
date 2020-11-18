@@ -52,23 +52,18 @@ type AdjMatrix = [[Bool]]
 -- GENERATION OF ADJACENCY LIST
 adjList :: [(Int,Int)] -> AdjList
 adjList [] = []
---adjList ((i, j) : []) = []
 adjList ((i, j) : (i2, j2) : xs) = if i2 == i then [[j] ++ [j2] ++ [x | (y,x) <- xs, y == i]] ++ adjList (removeI ((i, j) : (i2, j2) : xs))                                                                         
                                               else [[j]] ++ adjList ((i2,j2) : xs)
 
+--Auxiliary function to remove certain elements from the list of edges
 removeI :: [(Int,Int)] -> [(Int,Int)]
 removeI [] = []
 removeI ((i, j) : xs) = [(y,x) | (y,x) <- xs, y /= i]
 
 
-{-adjList ((i, j) : (i2, j2) : xs) = if i2 == i then (if getI xs == i2 then [j, j2, getI xs] : adjList xs
-                                                                     else [j, j2] : adjList xs)
-                                              else [j] : adjList ((i2,j2) : xs)-}
-
 -- GENERATION OF ADJACENCY MATRIX
-
---adjMatrix :: [(Int,Int)] -> AdjMatrix
-
+adjMatrix :: [(Int,Int)] -> AdjMatrix
+--adjMatrix ((i,j) : (i2,j2) : xs) = 
 --------------------------------------------------------
 
 -- WEIGHTED GRAPHS: every edge has a "weight"
