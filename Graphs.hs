@@ -63,7 +63,10 @@ removeI ((i, j) : xs) = [(y,x) | (y,x) <- xs, y /= i]
 
 -- GENERATION OF ADJACENCY MATRIX
 adjMatrix :: [(Int,Int)] -> AdjMatrix
---adjMatrix ((i,j) : (i2,j2) : xs) = 
+adjMatrix x = toMatrix (adjList x)
+
+toMatrix :: AdjList -> AdjMatrix
+toMatrix x = [[True]]
 --------------------------------------------------------
 
 -- WEIGHTED GRAPHS: every edge has a "weight"
