@@ -52,6 +52,7 @@ type AdjMatrix = [[Bool]]
 -- GENERATION OF ADJACENCY LIST
 adjList :: [(Int,Int)] -> AdjList
 adjList [] = []
+adjList [(i,j)] = [[j]]
 adjList ((i, j) : (i2, j2) : xs) = if i2 == i then [[j] ++ [j2] ++ [x | (y,x) <- xs, y == i]] ++ adjList (removeI ((i, j) : (i2, j2) : xs))                                                                         
                                               else [[j]] ++ adjList ((i2,j2) : xs)
 
@@ -66,7 +67,11 @@ adjMatrix :: [(Int,Int)] -> AdjMatrix
 adjMatrix x = toMatrix (adjList x)
 
 toMatrix :: AdjList -> AdjMatrix
-toMatrix x = [[True]]
+toMatrix ((a:as) : bs) = let (ys,zs) = splitAt (a-1) (initMatrix ((length ((a:as) : bs))^2)) in ys ++ [[True]] ++ zs
+
+initMatrix :: Int -> AdjMatrix
+initMatrix n = if n == 2 then [[False]]
+                         else [[False]] ++ initMatrix (n - 1)
 --------------------------------------------------------
 
 -- WEIGHTED GRAPHS: every edge has a "weight"
