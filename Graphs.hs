@@ -51,27 +51,18 @@ type AdjMatrix = [[Bool]]
 
 -- GENERATION OF ADJACENCY LIST
 adjList :: [(Int,Int)] -> AdjList
-adjList [] = []
-adjList [(i,j)] = [[j]]
-adjList ((i, j) : (i2, j2) : xs) = if i2 == i then [[j] ++ [j2] ++ [x | (y,x) <- xs, y == i]] ++ adjList (removeI ((i, j) : (i2, j2) : xs))                                                                         
-                                              else [[j]] ++ adjList ((i2,j2) : xs)
-
---Auxiliary function to remove certain elements from the list of edges
-removeI :: [(Int,Int)] -> [(Int,Int)]
-removeI [] = []
-removeI ((i, j) : xs) = [(y,x) | (y,x) <- xs, y /= i]
+adjList n = [filter (>0) ([if (elem (y,x) n) then x else 0 | x <- [0..(graphMax n)]]) | y <- [0..(graphMax n)]]
 
 
 -- GENERATION OF ADJACENCY MATRIX
 adjMatrix :: [(Int,Int)] -> AdjMatrix
-adjMatrix x = toMatrix (adjList x)
+adjMatrix [] = []
+adjMatrix n = [[elem (x,y) n | x <- [0..(graphMax n)]] | y <- [0..(graphMax n)]]                          
+              
+--Auxiliary function to find the maximum value in the graph
+graphMax :: [(Int,Int)] -> Int
+graphMax x = maximum (concat [[a,b] | (a,b) <- x])
 
-toMatrix :: AdjList -> AdjMatrix
-toMatrix ((a:as) : bs) = let (ys,zs) = splitAt (a-1) (initMatrix ((length ((a:as) : bs))^2)) in ys ++ [[True]] ++ zs
-
-initMatrix :: Int -> AdjMatrix
-initMatrix n = if n == 2 then [[False]]
-                         else [[False]] ++ initMatrix (n - 1)
 --------------------------------------------------------
 
 -- WEIGHTED GRAPHS: every edge has a "weight"
