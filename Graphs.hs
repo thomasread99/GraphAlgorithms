@@ -51,7 +51,7 @@ type AdjMatrix = [[Bool]]
 
 -- GENERATION OF ADJACENCY LIST
 adjList :: [(Int,Int)] -> AdjList
-adjList n = [filter (>0) ([if (elem (y,x) n) then x else 0 | x <- [0..(graphMax n)]]) | y <- [0..(graphMax n)]]
+adjList n = [filter (>=0) ([if (elem (y,x) n) then x else -1 | x <- [0..(graphMax n)]]) | y <- [0..(graphMax n)]]
 
 
 -- GENERATION OF ADJACENCY MATRIX
@@ -59,7 +59,7 @@ adjMatrix :: [(Int,Int)] -> AdjMatrix
 adjMatrix [] = []
 adjMatrix n = [[elem (x,y) n | x <- [0..(graphMax n)]] | y <- [0..(graphMax n)]]                          
               
---Auxiliary function to find the maximum value in the graph
+--Auxiliary function to find the maximum node value in the graph
 graphMax :: [(Int,Int)] -> Int
 graphMax x = maximum (concat [[a,b] | (a,b) <- x])
 
@@ -91,12 +91,29 @@ type Edges = [(Int,Int,Float)]
 -- GENERATION OF ADJACENCY LIST
 --   from a list of edges
 
---adjListW :: Edges -> WAdjList
+adjListW :: Edges -> WAdjList
+adjListW n = [filter (>=(0,0.0)) ([if (elem(y,x,z) n) then (x,z) else (-1,-1.0) | x <- [0..(wGraphMax n)], z <- [0.0..(weightMax n)]]) | y <- [0..(wGraphMax n)]]
+
+--Auxiliary function to find the maximum node value in the graph
+wGraphMax :: Edges -> Int
+wGraphMax x = maximum (concat [[a,b] | (a,b,c) <- x])
+
+--Auxiliary function to find the maximum weight in the graph
+weightMax :: Edges -> Float
+weightMax x = maximum (concat [[c] | (a,b,c) <- x])
+
 
 -- GENERATION OF ADJACENCY MATRIX
 --   from a list of edges
 
---adjMatrixW :: Edges -> WAdjMatrix
+adjMatrixW :: Edges -> WAdjMatrix
+adjMatrixW [] = []
+adjMatrixW n = [[if (elem(y,x,z) n) then Just z else Nothing | x <- [0..(wGraphMax n)], let z = (getW y x n)] | y <- [0..(wGraphMax n)]] 
+
+getW :: Int -> Int -> Edges -> Float
+getW x y [] = -1.0
+getW x y ((a,b,c) : ns) = if (x == a) && (y == b) then c
+                                                  else getW x y ns
 
 -- DIJKSTRA'S ALGORITHM
 
