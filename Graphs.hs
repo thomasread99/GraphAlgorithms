@@ -124,6 +124,7 @@ getW x y ((a,b,c) : ns) = if (x == a) && (y == b) then c
    (dijkstra al s)!!j is the minimum distance from s to j
 -}
 
+type PriorityQueue = [(Int,Float)]
 --dijkstra :: WAdjList -> Int -> [Maybe Float]
 
 -- FLOYD-WARSHALL ALGORITHM
