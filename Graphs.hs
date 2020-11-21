@@ -110,6 +110,7 @@ adjMatrixW :: Edges -> WAdjMatrix
 adjMatrixW [] = []
 adjMatrixW n = [[if (elem(y,x,z) n) then Just z else Nothing | x <- [0..(wGraphMax n)], let z = (getW y x n)] | y <- [0..(wGraphMax n)]] 
 
+--Auxiliary function to find the weight to a specific node
 getW :: Int -> Int -> Edges -> Float
 getW x y [] = -1.0
 getW x y ((a,b,c) : ns) = if (x == a) && (y == b) then c
