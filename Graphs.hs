@@ -125,7 +125,66 @@ getW x y ((a,b,c) : ns) = if (x == a) && (y == b) then c
 -}
 
 type PriorityQueue = [(Int,Float)]
---dijkstra :: WAdjList -> Int -> [Maybe Float]
+
+dijkstra :: WAdjList -> Int -> [Maybe Float]
+dijkstra g s = dijkstra' g s (initPQ g s)
+
+--ORDER RESULTS CORRECTLY!!!!!!!!!!!!!!
+--Recursive Dijkstra's function
+dijkstra' :: WAdjList -> Int -> PriorityQueue -> [Maybe Float]
+dijkstra' g s [] = []
+dijkstra' g s ((k,v) : xs) = let answer = v
+                             in if answer == -1.0 then insertResult (dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g))) [Nothing] (k-1)--[Nothing] ++ dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g))
+                                else insertResult (dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g))) [Just answer] (k-1)--[Just answer] ++ dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g))
+
+--Auxiliary function to insert the result into the correct position
+insertResult :: [Maybe Float] -> [Maybe Float] -> Int -> [Maybe Float]
+insertResult r x n = let (ys,zs) = splitAt n r 
+                     in ys ++ x ++ zs
+
+--Auxiliary function to relax the values in the priority queue
+relaxPQ :: PriorityQueue -> Int -> Float -> WAdjList -> PriorityQueue
+relaxPQ [] s sw g = []
+relaxPQ ((k,v) : xs) s sw g = if isEdge s k g then (if (getWeight s k g + sw) < v then [(k,(getWeight s k g + sw))] ++ relaxPQ xs s sw g
+                                                                                  else [(k,v)] ++ relaxPQ xs s sw g) 
+                                              else [(k,v)] ++ relaxPQ xs s sw g                 
+                      
+--Auxiliary function to initialise the priority queue
+initPQ :: WAdjList -> Int -> PriorityQueue
+initPQ g s = let first = [(s,0.0)]
+                 rest = [(k,99.0) | k <- [0..(wAdjListMax g)], k /= s]
+             in first ++ rest 
+
+--Auxiliary function to get the maximum node from the adjacency list
+wAdjListMax :: WAdjList -> Int
+wAdjListMax x = maximum (concat [[a] | (a,b) <- concat x])
+
+--Auxiliary function to reorder the priority queue using quicksort
+reorderPQ :: PriorityQueue -> PriorityQueue
+reorderPQ [] = []
+reorderPQ ((a,b) : xs) = reorderPQ smaller ++ [(a,b)] ++ reorderPQ larger
+                         where
+                            larger = [(c,d) | (c,d) <- xs, d > b]
+                            smaller = [(e,f) | (e,f) <- xs, f <= b]
+
+--Auxiliary function to determine is there is an edge between two nodes
+isEdge :: Int -> Int -> WAdjList -> Bool
+isEdge i j g = isEdge' j (g!!i)
+
+--Recursive function to determine if there is an edge between two nodes
+isEdge' :: Int -> [(Int,Float)] -> Bool
+isEdge' x [] = False
+isEdge' x ((a,b) : ns) = if (x == a) then True
+                                     else isEdge' x ns
+
+--Auxiliary function to get the weight between two nodes
+getWeight :: Int -> Int -> WAdjList -> Float
+getWeight s d g = getWeight' d (g!!s)
+
+--Recursive function to get weight
+getWeight' :: Int -> [(Int,Float)] -> Float
+getWeight' d ((a,b) : ns) = if (d == a) then b
+                                        else getWeight' d ns
 
 -- FLOYD-WARSHALL ALGORITHM
 
