@@ -127,15 +127,23 @@ getW x y ((a,b,c) : ns) = if (x == a) && (y == b) then c
 type PriorityQueue = [(Int,Float)]
 
 dijkstra :: WAdjList -> Int -> [Maybe Float]
-dijkstra g s = dijkstra' g s (initPQ g s)
+dijkstra g s = orderResult(dijkstra' g s (initPQ g s))
 
 --ORDER RESULTS CORRECTLY!!!!!!!!!!!!!!
 --Recursive Dijkstra's function
-dijkstra' :: WAdjList -> Int -> PriorityQueue -> [Maybe Float]
+dijkstra' :: WAdjList -> Int -> PriorityQueue -> [(Int, Maybe Float)]
 dijkstra' g s [] = []
 dijkstra' g s ((k,v) : xs) = let answer = v
-                             in if answer == -1.0 then insertResult (dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g))) [Nothing] (k-1)--[Nothing] ++ dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g))
-                                else insertResult (dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g))) [Just answer] (k-1)--[Just answer] ++ dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g))
+                                 key = k
+                             in if answer == 99.0 then [(key,Nothing)] ++ (dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g)))
+                                else [(key,Just answer)] ++ (dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g)))                            
+
+orderResult :: [(Int, Maybe Float)] -> [Maybe Float]
+orderResult [] = []
+orderResult ((k,v) : xs) = orderResult smaller ++ [v] ++ orderResult larger
+                           where
+                              smaller = [a | a <- xs, a <= (k,v)]
+                              larger = [b | b <- xs, b > (k,v)]
 
 --Auxiliary function to insert the result into the correct position
 insertResult :: [Maybe Float] -> [Maybe Float] -> Int -> [Maybe Float]
