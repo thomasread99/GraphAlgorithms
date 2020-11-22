@@ -129,7 +129,6 @@ type PriorityQueue = [(Int,Float)]
 dijkstra :: WAdjList -> Int -> [Maybe Float]
 dijkstra g s = orderResult(dijkstra' g s (initPQ g s))
 
---ORDER RESULTS CORRECTLY!!!!!!!!!!!!!!
 --Recursive Dijkstra's function
 dijkstra' :: WAdjList -> Int -> PriorityQueue -> [(Int, Maybe Float)]
 dijkstra' g s [] = []
@@ -138,17 +137,13 @@ dijkstra' g s ((k,v) : xs) = let answer = v
                              in if answer == 99.0 then [(key,Nothing)] ++ (dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g)))
                                 else [(key,Just answer)] ++ (dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g)))                            
 
+--Auxiliary function order the final result correctly
 orderResult :: [(Int, Maybe Float)] -> [Maybe Float]
 orderResult [] = []
 orderResult ((k,v) : xs) = orderResult smaller ++ [v] ++ orderResult larger
                            where
                               smaller = [a | a <- xs, a <= (k,v)]
                               larger = [b | b <- xs, b > (k,v)]
-
---Auxiliary function to insert the result into the correct position
-insertResult :: [Maybe Float] -> [Maybe Float] -> Int -> [Maybe Float]
-insertResult r x n = let (ys,zs) = splitAt n r 
-                     in ys ++ x ++ zs
 
 --Auxiliary function to relax the values in the priority queue
 relaxPQ :: PriorityQueue -> Int -> Float -> WAdjList -> PriorityQueue
