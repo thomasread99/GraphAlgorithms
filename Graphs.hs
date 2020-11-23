@@ -198,4 +198,26 @@ getWeight' d ((a,b) : ns) = if (d == a) then b
      (Just x) if the shortest path from i to j has length x
 -}
 
---floydWarshall :: WAdjMatrix -> WAdjMatrix
+floydWarshall :: WAdjMatrix -> WAdjMatrix
+floydWarshall g = floydWarshall' ((length g)-1) (initAnsMatrix g)   
+
+--Recursive Floyd-Warshall function
+floydWarshall' :: Int -> WAdjMatrix -> WAdjMatrix
+floydWarshall' 0 g = g
+floydWarshall' k g = floydWarshall' (k-1) ([[if (addFloats (g!!i!!k) (g!!k!!j)) == Nothing then v else (if (addFloats (g!!i!!k) (g!!k!!j)) < g!!i!!j then (addFloats (g!!i!!k) (g!!k!!j)) else v) | i <- [0..((length g)-1)], v <- [g!!i!!j]] | j <- [0..((length g)-1)]])
+
+--Auxiliary function to initialise the answer matrix
+initAnsMatrix :: WAdjMatrix -> WAdjMatrix
+initAnsMatrix g = [[if i==j then Just 0.0 else v | i <- [0..((length g)-1)], v <- [g!!i!!j]] | j <- [0..((length g)-1)]]
+
+--Auxiliary function to add two floats together
+addFloats :: Maybe Float -> Maybe Float -> Maybe Float
+addFloats Nothing Nothing = Nothing
+addFloats (Just w) Nothing = Nothing
+addFloats Nothing (Just w2) = Nothing
+addFloats (Just w) (Just w2) = Just (w + w2)
+
+{-TO DO
+   -Fix Dijkstra's, not working on larger inputs
+   -Problem with floyd when two node's don't have a direct connection (init to 0 or something)
+-}
