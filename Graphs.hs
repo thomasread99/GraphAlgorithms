@@ -214,7 +214,7 @@ addFloats (Just w) Nothing = Nothing
 addFloats Nothing (Just w2) = Nothing
 addFloats (Just w) (Just w2) = Just (w + w2)
 
---Auxiliary function to compare two float values together
+--Auxiliary function to compare two float values together (needed due to using Nothing in place of infinite)
 compareValues :: Maybe Float -> Maybe Float -> Bool
 compareValues (Just w) Nothing = True
 compareValues (Just w) (Just w2) = if w < w2 then True
