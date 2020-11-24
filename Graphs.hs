@@ -134,8 +134,9 @@ dijkstra' :: WAdjList -> Int -> PriorityQueue -> [(Int, Maybe Float)]
 dijkstra' g s [] = []
 dijkstra' g s ((k,v) : xs) = let answer = v
                                  key = k
-                             in if answer == 99.0 then [(key,Nothing)] ++ (dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g)))
-                                else [(key,Just answer)] ++ (dijkstra' g (fst (head xs)) (reorderPQ (relaxPQ xs s v g)))                            
+                                 newPQ = (reorderPQ (relaxPQ xs s v g))                             
+                             in if answer == 99.0 then [(key,Nothing)] ++ (dijkstra' g (fst (head newPQ)) newPQ)                                
+                                else [(key,Just answer)] ++ (dijkstra' g (fst (head newPQ)) newPQ)                            
 
 --Auxiliary function order the final result correctly
 orderResult :: [(Int, Maybe Float)] -> [Maybe Float]
@@ -155,12 +156,8 @@ relaxPQ ((k,v) : xs) s sw g = if isEdge s k g then (if (getWeight s k g + sw) < 
 --Auxiliary function to initialise the priority queue
 initPQ :: WAdjList -> Int -> PriorityQueue
 initPQ g s = let first = [(s,0.0)]
-                 rest = [(k,99.0) | k <- [0..(wAdjListMax g)], k /= s]
+                 rest = [(k,99.0) | k <- [0..((length g)-1)], k /= s]
              in first ++ rest 
-
---Auxiliary function to get the maximum node from the adjacency list
-wAdjListMax :: WAdjList -> Int
-wAdjListMax x = maximum (concat [[a] | (a,b) <- concat x])
 
 --Auxiliary function to reorder the priority queue using quicksort
 reorderPQ :: PriorityQueue -> PriorityQueue
@@ -199,12 +196,12 @@ getWeight' d ((a,b) : ns) = if (d == a) then b
 -}
 
 floydWarshall :: WAdjMatrix -> WAdjMatrix
-floydWarshall g = floydWarshall' ((length g)-1) (initAnsMatrix g)   
+floydWarshall g = floydWarshall' 0 (initAnsMatrix g)   
 
 --Recursive Floyd-Warshall function
 floydWarshall' :: Int -> WAdjMatrix -> WAdjMatrix
-floydWarshall' 0 g = g
-floydWarshall' k g = floydWarshall' (k-1) ([[if (addFloats (g!!i!!k) (g!!k!!j)) == Nothing then v else (if (addFloats (g!!i!!k) (g!!k!!j)) < g!!i!!j then (addFloats (g!!i!!k) (g!!k!!j)) else v) | i <- [0..((length g)-1)], v <- [g!!i!!j]] | j <- [0..((length g)-1)]])
+floydWarshall' k g = if k == (length g) then g 
+                                        else floydWarshall' (k+1) ([[if sum == Nothing then v else (if (compareValues sum v) then sum else v) | j <- [0..((length g)-1)], let v = g!!i!!j, let sum = (addFloats (g!!i!!k) (g!!k!!j))] | i <- [0..((length g)-1)]])
 
 --Auxiliary function to initialise the answer matrix
 initAnsMatrix :: WAdjMatrix -> WAdjMatrix
@@ -217,7 +214,12 @@ addFloats (Just w) Nothing = Nothing
 addFloats Nothing (Just w2) = Nothing
 addFloats (Just w) (Just w2) = Just (w + w2)
 
-{-TO DO
-   -Fix Dijkstra's, not working on larger inputs
+compareValues :: Maybe Float -> Maybe Float -> Bool
+compareValues (Just w) Nothing = True
+compareValues (Just w) (Just w2) = if w < w2 then True
+                                             else False
+
+{-TO DO   
    -Problem with floyd when two node's don't have a direct connection (init to 0 or something)
+   -Error handling if node not exist dijkstras   
 -}
