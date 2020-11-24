@@ -201,7 +201,7 @@ floydWarshall g = floydWarshall' 0 (initAnsMatrix g)
 --Recursive Floyd-Warshall function
 floydWarshall' :: Int -> WAdjMatrix -> WAdjMatrix
 floydWarshall' k g = if k == (length g) then g 
-                                        else floydWarshall' (k+1) ([[if sum == Nothing then v else (if (compareValues sum v) then sum else v) | j <- [0..((length g)-1)], let v = g!!i!!j, let sum = (addFloats (g!!i!!k) (g!!k!!j))] | i <- [0..((length g)-1)]])
+                                        else floydWarshall' (k+1) ([[if sum == Nothing then v else (if (compareValues sum v) then sum else v) | i <- [0..((length g)-1)], let v = g!!i!!j, let sum = (addFloats (g!!i!!k) (g!!k!!j))] | j <- [0..((length g)-1)]])
 
 --Auxiliary function to initialise the answer matrix
 initAnsMatrix :: WAdjMatrix -> WAdjMatrix
@@ -214,6 +214,7 @@ addFloats (Just w) Nothing = Nothing
 addFloats Nothing (Just w2) = Nothing
 addFloats (Just w) (Just w2) = Just (w + w2)
 
+--Auxiliary function to compare two float values together
 compareValues :: Maybe Float -> Maybe Float -> Bool
 compareValues (Just w) Nothing = True
 compareValues (Just w) (Just w2) = if w < w2 then True
