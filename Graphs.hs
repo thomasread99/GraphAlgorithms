@@ -51,6 +51,7 @@ type AdjMatrix = [[Bool]]
 
 -- GENERATION OF ADJACENCY LIST
 adjList :: [(Int,Int)] -> AdjList
+adjList [] = []
 adjList n = [filter (>=0) ([if (elem (y,x) n) then x else -1 | x <- [0..(graphMax n)]]) | y <- [0..(graphMax n)]]
 
 
@@ -92,6 +93,7 @@ type Edges = [(Int,Int,Float)]
 --   from a list of edges
 
 adjListW :: Edges -> WAdjList
+adjListW [] = []
 adjListW n = [filter (>=(0,0.0)) ([if (elem(y,x,z) n) then (x,z) else (-1,-1.0) | x <- [0..(wGraphMax n)], z <- [0.0..(weightMax n)]]) | y <- [0..(wGraphMax n)]]
 
 --Auxiliary function to find the maximum node value in the graph
@@ -108,7 +110,7 @@ weightMax x = maximum (concat [[c] | (a,b,c) <- x])
 
 adjMatrixW :: Edges -> WAdjMatrix
 adjMatrixW [] = []
-adjMatrixW n = [[if (elem(y,x,z) n) then Just z else Nothing | x <- [0..(wGraphMax n)], let z = (getW y x n)] | y <- [0..(wGraphMax n)]] 
+adjMatrixW n = [[if (elem(y,x,z) n) then Just z else (if x==y then Just 0 else Nothing) | x <- [0..(wGraphMax n)], let z = (getW y x n)] | y <- [0..(wGraphMax n)]] 
 
 --Auxiliary function to find the weight to a specific node
 getW :: Int -> Int -> Edges -> Float
@@ -127,7 +129,8 @@ getW x y ((a,b,c) : ns) = if (x == a) && (y == b) then c
 type PriorityQueue = [(Int,Float)]
 
 dijkstra :: WAdjList -> Int -> [Maybe Float]
-dijkstra g s = orderResult(dijkstra' g s (initPQ g s))
+dijkstra g s = if s > ((length g)-1) then [Nothing]
+                                     else orderResult(dijkstra' g s (initPQ g s))
 
 --Recursive Dijkstra's function
 dijkstra' :: WAdjList -> Int -> PriorityQueue -> [(Int, Maybe Float)]
@@ -135,7 +138,7 @@ dijkstra' g s [] = []
 dijkstra' g s ((k,v) : xs) = let answer = v
                                  key = k
                                  newPQ = (reorderPQ (relaxPQ xs s v g))                             
-                             in if answer == 99.0 then [(key,Nothing)] ++ (dijkstra' g (fst (head newPQ)) newPQ)                                
+                             in if answer == 1/0 then [(key,Nothing)] ++ (dijkstra' g (fst (head newPQ)) newPQ)                                
                                 else [(key,Just answer)] ++ (dijkstra' g (fst (head newPQ)) newPQ)                            
 
 --Auxiliary function order the final result correctly
@@ -156,7 +159,7 @@ relaxPQ ((k,v) : xs) s sw g = if isEdge s k g then (if (getWeight s k g + sw) < 
 --Auxiliary function to initialise the priority queue
 initPQ :: WAdjList -> Int -> PriorityQueue
 initPQ g s = let first = [(s,0.0)]
-                 rest = [(k,99.0) | k <- [0..((length g)-1)], k /= s]
+                 rest = [(k,1/0) | k <- [0..((length g)-1)], k /= s]
              in first ++ rest 
 
 --Auxiliary function to reorder the priority queue using quicksort
@@ -219,8 +222,3 @@ compareValues :: Maybe Float -> Maybe Float -> Bool
 compareValues (Just w) Nothing = True
 compareValues (Just w) (Just w2) = if w < w2 then True
                                              else False
-
-{-TO DO   
-   -Problem with floyd when two node's don't have a direct connection (init to 0 or something)
-   -Error handling if node not exist dijkstras   
--}
